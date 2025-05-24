@@ -4,18 +4,15 @@ const axios = require("axios");
 const app = express();
 const PORT = 3000;
 
-// Replace this with your actual token
 const ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzQ4MDY5Mjg5LCJpYXQiOjE3NDgwNjg5ODksImlzcyI6IkFmZm9yZG1lZCIsImp0aSI6ImMyOTk2NzA4LWM5ZmItNGFjMS05N2QxLWYwMzUyM2Y1NGE2OSIsInN1YiI6InlhZGhhdmFyYW1hbmFueWFkaGF2YUBnbWFpbC5jb20ifSwiZW1haWwiOiJ5YWRoYXZhcmFtYW5hbnlhZGhhdmFAZ21haWwuY29tIiwibmFtZSI6InlhZGhhdmFyYW1hbmFuIGMiLCJyb2xsTm8iOiI5Mjc2MjJiYWwwNTUiLCJhY2Nlc3NDb2RlIjoid2hlUVV5IiwiY2xpZW50SUQiOiJjMjk5NjcwOC1jOWZiLTRhYzEtOTdkMS1mMDM1MjNmNTRhNjkiLCJjbGllbnRTZWNyZXQiOiJLTlJGV1VYeXlQaFFmeHZ1In0.M0YULWPwIjiGkoXrdaYuuwOvhaukk--qvHrHE91bI4k";
 
 const BASE_URL = "http://20.244.56.144/evaluation-service/stocks";
 
-// Utility function to calculate average
 function calculateAverage(prices) {
   const sum = prices.reduce((acc, obj) => acc + obj.price, 0);
   return prices.length ? sum / prices.length : 0;
 }
 
-// Utility function to calculate Pearson correlation
 function calculateCorrelation(prices1, prices2) {
   const len = Math.min(prices1.length, prices2.length);
   if (len < 2) return null;
@@ -42,7 +39,6 @@ function calculateCorrelation(prices1, prices2) {
   return denominator === 0 ? null : +(numerator / denominator).toFixed(4);
 }
 
-// Route 1: Get average stock price
 app.get("/stocks/:ticker", async (req, res) => {
   const { ticker } = req.params;
   const { minutes, aggregation } = req.query;
@@ -66,7 +62,6 @@ app.get("/stocks/:ticker", async (req, res) => {
   }
 });
 
-// Route 2: Get correlation between two stocks
 app.get("/stockcorrelation", async (req, res) => {
   const { minutes, ticker } = req.query;
 
@@ -108,7 +103,6 @@ app.get("/stockcorrelation", async (req, res) => {
   }
 });
 
-// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
