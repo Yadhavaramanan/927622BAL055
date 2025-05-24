@@ -39,26 +39,30 @@ function calculateCorrelation(prices1, prices2) {
   return denominator === 0 ? null : +(numerator / denominator).toFixed(4);
 }
 
-app.get("/stocks/:ticker", async (req, res) => {
+app.get('/stocks/:ticker', async (req, res) => {
   const { ticker } = req.params;
   const { minutes, aggregation } = req.query;
 
-  if (!minutes || aggregation !== "average") {
+  if (!ticker || !minutes || isNaN(minutes) || !aggregation) {
     return res.status(400).json({ error: "Missing or invalid query parameters" });
   }
 
   try {
-    const response = await axios.get(`${BASE_URL}/${ticker}`, {
-      params: { minutes },
-      headers: { Authorization: `Bearer ${ACCESS_TOKEN}` },
-    });
+    const prices = await fetchStockPrices(ticker, parseInt(minutes));
+    let result;
 
-    const priceHistory = response.data;
-    const averagePrice = calculateAverage(priceHistory);
+    if (aggregation === 'average') {
+      const total = prices.reduce((sum, price) => sum + price, 0);
+      result = total / prices.length;
+    } else if (aggregation === 'correlation') {
+      result = computeCorrelation(prices);
+      return res.status(400).json({ error: "Invalid aggregation type" });
+    }
 
-    res.json({ averageStockPrice: averagePrice, priceHistory });
+    res.json({ ticker, aggregation, result });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    console.error(error.message);
+    res.status(500).json({ error: "Failed to fetch stock data" });
   }
 });
 
